@@ -1,4 +1,4 @@
-import {cart} from '../data/cart.js'
+import {cart, addToCart} from '../data/cart.js'
 import { products } from '../data/products.js'
 
 let productsHTML = ''
@@ -58,44 +58,21 @@ products.forEach((product, productIdx) => {
 
 document.querySelector('.js-products-grid').innerHTML = productsHTML
 
+function updateCartQuantity(){
+  let cartQuantity = 0;
+
+  cart.forEach((item)=>{
+    cartQuantity += item.quantity
+  })
+
+  document.querySelector('.js-cart-quantity')
+    .innerHTML = cartQuantity
+}
+
 document.querySelectorAll('.js-add-to-cart').forEach((button, buttonIdx) => {
   button.addEventListener('click', () =>{
-    
     const {productId} = button.dataset
-
-    let matchingItem;
-    
-    const quantityIncrement = Number(document.querySelector(`.js-quantity-selector-${productId}`).value)
-
-    cart.forEach((item) => {
-      if(productId === item.productId){
-        matchingItem = item
-      }
-    })
-
-    if(matchingItem){
-      matchingItem.quantity += quantityIncrement
-    }else{
-      cart.push({
-        productId,
-        quantity: quantityIncrement
-      })
-    }
-
-    let cartQuantity = 0;
-
-    cart.forEach((item)=>{
-      cartQuantity += item.quantity
-    })
-    document.querySelector('.js-cart-quantity')
-      .innerHTML = cartQuantity
-
-    const addedToCartTooltipElement = document.querySelector(`.js-added-to-cart-${productId}`)
-
-    addedToCartTooltipElement.classList.add('show-added-to-cart')
-    setTimeout(()=>{
-      addedToCartTooltipElement.classList.remove('show-added-to-cart')
-    }, 1000)
-
+    addToCart(productId)
+    updateCartQuantity()
   })
 })
