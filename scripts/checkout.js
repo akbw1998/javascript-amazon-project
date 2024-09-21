@@ -53,7 +53,7 @@ function isValidUpdateQuantity(updateQty){
   return updateQty >= 0 && updateQty < 1000
 }
 
-function renderCheckoutPage(){
+function renderOrderSummary(){
     updateCheckoutQuantity()
     let cartSummaryHTML = ''
     cart.forEach((cartItem) => {
@@ -180,9 +180,9 @@ function renderCheckoutPage(){
             deliveryOption.addEventListener('click', () =>{
               const {productId, deliveryOptionId} = deliveryOption.dataset
               updateDeliveryOption(productId, deliveryOptionId)
-              renderCheckoutPage()
+              renderOrderSummary()
             })
           })
 }
 
-renderCheckoutPage()
+renderOrderSummary()
