@@ -1,3 +1,5 @@
+import { products } from "./products.js"
+
 export let cart = JSON.parse(localStorage.getItem('cart')) || [
     {
         productId: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
@@ -12,61 +14,75 @@ export let cart = JSON.parse(localStorage.getItem('cart')) || [
 
 
 export function saveCartToLocalStorage(){
-    localStorage.setItem('cart', JSON.stringify(cart))
+  localStorage.setItem('cart', JSON.stringify(cart))
 }
+
 export function removeFromCart(productId){
-    cart = cart.filter((cartItem) => {
-        return cartItem.productId !== productId
-    })
-    saveCartToLocalStorage()
+  cart = cart.filter((cartItem) => {
+      return cartItem.productId !== productId
+  })
+  saveCartToLocalStorage()
 }
 
 export function addToCart(productId){
-    let matchingItem;
-    const quantityIncrement = Number(document.querySelector(`.js-quantity-selector-${productId}`).value)
-  
-    cart.forEach((cartItem) => {
-      if(productId === cartItem.productId){
-        matchingItem = cartItem
-      }
-    })
-  
-    if(matchingItem){
-      matchingItem.quantity += quantityIncrement
-    }else{
-      cart.push({
-        productId,
-        quantity: quantityIncrement,
-        deliveryOptionId: '1'
-      })
+  let matchingItem;
+  const quantityIncrement = Number(document.querySelector(`.js-quantity-selector-${productId}`).value)
+
+  cart.forEach((cartItem) => {
+    if(productId === cartItem.productId){
+      matchingItem = cartItem
     }
-  
-    const addedToCartTooltipElement = document.querySelector(`.js-added-to-cart-${productId}`)
-    addedToCartTooltipElement.classList.add('show-added-to-cart')
-    setTimeout(()=>{
-      addedToCartTooltipElement.classList.remove('show-added-to-cart')
-    }, 1000)
-    
-    saveCartToLocalStorage()
+  })
+
+  if(matchingItem){
+    matchingItem.quantity += quantityIncrement
+  }else{
+    cart.push({
+      productId,
+      quantity: quantityIncrement,
+      deliveryOptionId: '1'
+    })
   }
+
+  const addedToCartTooltipElement = document.querySelector(`.js-added-to-cart-${productId}`)
+  addedToCartTooltipElement.classList.add('show-added-to-cart')
+  setTimeout(()=>{
+    addedToCartTooltipElement.classList.remove('show-added-to-cart')
+  }, 1000)
+  
+  saveCartToLocalStorage()
+}
 
 
 export function getTotalCartQuantity(){
-    let cartQuantity = 0;
-  
-    cart.forEach((item)=>{
-      cartQuantity += item.quantity
-    })
-  
-    return cartQuantity
-  }
+  let cartQuantity = 0;
+
+  cart.forEach((item)=>{
+    cartQuantity += item.quantity
+  })
+
+  return cartQuantity
+}
 
 export function updateCartQuantity(productId, updatedQuantity){
-    for(let i = 0; i < cart.length; i++){
-        if(cart[i].productId === productId){
-            cart[i].quantity = updatedQuantity
-            saveCartToLocalStorage()
-            break;
-        }
+  for(let i = 0; i < cart.length; i++){
+    if(cart[i].productId === productId){
+      cart[i].quantity = updatedQuantity
+      saveCartToLocalStorage()
+      break;
     }
+  }
+}
+
+export function updateDeliveryOption(productId, deliveryOptionId){
+  let matchingItem;
+
+  cart.forEach((cartItem)=>{
+    if(cartItem.productId === productId){
+      matchingItem = cartItem
+    }
+  })
+
+  matchingItem.deliveryOptionId = deliveryOptionId
+  saveCartToLocalStorage()
 }

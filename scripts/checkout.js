@@ -1,4 +1,4 @@
-import { cart, removeFromCart ,getTotalCartQuantity, updateCartQuantity} from "../data/cart.js";
+import { cart, removeFromCart ,getTotalCartQuantity, updateCartQuantity, updateDeliveryOption} from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js'
@@ -22,10 +22,11 @@ function deliveryOptionsHTML(matchingItem, cartItem){
       ? 'FREE' 
       : `$${formatCurrency(deliveryOption.priceCents)} -`
     
-    const isChecked = cartItem.deliveryOptionsId === deliveryOption.id
-
+    const isChecked = cartItem.deliveryOptionId === deliveryOption.id
+    console.log(isChecked)
     html += `
-    <div class="delivery-option">
+    <div class="delivery-option js-delivery-option"
+      data-product-id="${matchingItem.id}" data-delivery-option-id="${deliveryOption.id}">
       <input type="radio" 
         ${isChecked ? 'checked' : ''}
         class="delivery-option-input"
@@ -41,6 +42,15 @@ function deliveryOptionsHTML(matchingItem, cartItem){
     </div>`
   })
   return html
+}
+
+function updateCheckoutQuantity(){
+  document.querySelector('.js-checkout-header-middle-section .js-return-to-home-link')
+      .innerText = `${getTotalCartQuantity()}`
+}
+
+function isValidUpdateQuantity(updateQty){
+  return updateQty >= 0 && updateQty < 1000
 }
 
 function renderCheckoutPage(){
@@ -73,7 +83,7 @@ function renderCheckoutPage(){
         const dateString = deliveryDate.format(
           'dddd, MMMM D'
         )
-
+        
         cartSummaryHTML += `<div class="cart-item-container js-cart-item-container-${matchingItem.id}">
                 <div class="delivery-date">
                   Delivery date: ${dateString}
@@ -171,11 +181,10 @@ document.querySelectorAll('.js-save-quantity-link')
        
     })
 
-function updateCheckoutQuantity(){
-    document.querySelector('.js-checkout-header-middle-section .js-return-to-home-link')
-        .innerText = `${getTotalCartQuantity()}`
-}
-
-function isValidUpdateQuantity(updateQty){
-    return updateQty >= 0 && updateQty < 1000
-}
+document.querySelectorAll('.js-delivery-option')
+    .forEach((deliveryOption) => {
+      deliveryOption.addEventListener('click', () =>{
+        const {productId, deliveryOptionId} = deliveryOption.dataset
+        updateDeliveryOption(productId, deliveryOptionId)
+      })
+    })
