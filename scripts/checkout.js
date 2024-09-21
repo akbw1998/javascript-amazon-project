@@ -130,12 +130,8 @@ function renderCheckoutPage(){
               </div>`
     })
     document.querySelector('.js-order-summary').innerHTML = cartSummaryHTML
-}
 
-renderCheckoutPage()
-
-
-document.querySelectorAll('.js-delete-quantity-link')
+    document.querySelectorAll('.js-delete-quantity-link')
     .forEach((deleteLink)=>{
         deleteLink.addEventListener('click', ()=>{
             const {productId} = deleteLink.dataset
@@ -145,46 +141,48 @@ document.querySelectorAll('.js-delete-quantity-link')
         })
     })
 
-document.querySelectorAll('.js-update-quantity-link')
-    .forEach(updateLink => {
-        updateLink.addEventListener('click', () => {
-            const {productId} = updateLink.dataset
-            const cartItemContainerElement = document.querySelector(`.js-cart-item-container-${productId}`)
-            cartItemContainerElement.classList.add('is-editing-quantity')
+    document.querySelectorAll('.js-update-quantity-link')
+        .forEach(updateLink => {
+            updateLink.addEventListener('click', () => {
+                const {productId} = updateLink.dataset
+                const cartItemContainerElement = document.querySelector(`.js-cart-item-container-${productId}`)
+                cartItemContainerElement.classList.add('is-editing-quantity')
+            })
         })
-    })
 
 
-document.querySelectorAll('.js-save-quantity-link')
-    .forEach(saveLink => {
-        saveLink.addEventListener('click', () => {
-            const {productId} = saveLink.dataset
-            const updateQuantityInputElement = document.querySelector(`.js-quantity-input-${productId}`)
-            const updatedQuantity = Number(updateQuantityInputElement.value)
-            if(!isValidUpdateQuantity(updatedQuantity))
-                return
-            if(updatedQuantity === 0){ // same as deleting item
-                removeFromCart(productId)
-                document.querySelector(`.js-cart-item-container-${productId}`).remove()
+    document.querySelectorAll('.js-save-quantity-link')
+        .forEach(saveLink => {
+            saveLink.addEventListener('click', () => {
+                const {productId} = saveLink.dataset
+                const updateQuantityInputElement = document.querySelector(`.js-quantity-input-${productId}`)
+                const updatedQuantity = Number(updateQuantityInputElement.value)
+                if(!isValidUpdateQuantity(updatedQuantity))
+                    return
+                if(updatedQuantity === 0){ // same as deleting item
+                    removeFromCart(productId)
+                    document.querySelector(`.js-cart-item-container-${productId}`).remove()
+                    updateCheckoutQuantity()
+                    return
+                }
+                document.querySelector(`.js-quantity-label-${productId}`).innerText = updatedQuantity
+
+                updateCartQuantity(productId, updatedQuantity)
                 updateCheckoutQuantity()
-                return
-            }
-            console.log(updatedQuantity)
-            document.querySelector(`.js-quantity-label-${productId}`).innerText = updatedQuantity
 
-            updateCartQuantity(productId, updatedQuantity)
-            updateCheckoutQuantity()
-
-            const cartItemContainerElement = document.querySelector(`.js-cart-item-container-${productId}`)
-            cartItemContainerElement.classList.remove('is-editing-quantity')
-        })
-       
-    })
-
-document.querySelectorAll('.js-delivery-option')
-    .forEach((deliveryOption) => {
-      deliveryOption.addEventListener('click', () =>{
-        const {productId, deliveryOptionId} = deliveryOption.dataset
-        updateDeliveryOption(productId, deliveryOptionId)
+                const cartItemContainerElement = document.querySelector(`.js-cart-item-container-${productId}`)
+                cartItemContainerElement.classList.remove('is-editing-quantity')
+            })
       })
-    })
+
+      document.querySelectorAll('.js-delivery-option')
+          .forEach((deliveryOption) => {
+            deliveryOption.addEventListener('click', () =>{
+              const {productId, deliveryOptionId} = deliveryOption.dataset
+              updateDeliveryOption(productId, deliveryOptionId)
+              renderCheckoutPage()
+            })
+          })
+}
+
+renderCheckoutPage()
